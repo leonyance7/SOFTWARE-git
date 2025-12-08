@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Módulo de Ventas - Hotel System</title>
+    <!-- Tailwind CSS para estructura rápida y responsive -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Iconos Phosphor para una estética limpia -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Fuente Inter para legibilidad -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa; /* Gris muy claro de fondo */
+            color: #1a1a1a;
+        }
+
+        /* Estilo para los botones primarios (Negro) */
+        .btn-primary {
+            background-color: #000000;
+            color: #ffffff;
+            transition: background-color 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: #333333;
+        }
+
+        /* Estilo para tarjetas KPI */
+        .kpi-card {
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Estilo para la tabla */
+        .sales-table th {
+            background-color: #f4f4f4;
+            color: #333333;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .sales-table td {
+            border-bottom: 1px solid #eeeeee;
+        }
+        .sales-table tr:hover {
+            background-color: #fafafa;
+        }
+    </style>
+</head>
+<body class="h-screen flex overflow-hidden">
+
+    <!-- 1. SIDEBAR NAVIGATION -->
+    <aside class="w-64 bg-black text-white flex flex-col shadow-xl z-20">
+        <div class="logo-container">
+            <img src="logo2.png" alt="Logo Hotel Soft">
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-4">
+            <ul class="space-y-1">
+                <li>
+                    <a href="Inicio.html" onclick="loadModule('Inicio')" class="flex items-center gap-3 px-6 py-3 text-gray-400 hover:text-white hover:bg-gray-900 transition-colors">
+                        <i class="ph ph-house text-xl"></i>
+                        <span>Inicio</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="Recepcion.HTML" onclick="loadModule('Recepción')" class="flex items-center gap-3 px-6 py-3 text-gray-400 hover:text-white hover:bg-gray-900 transition-colors">
+                        <i class="ph ph-bell-concierge text-xl"></i>
+                        <span>Recepción</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="Administracion.html" onclick="loadModule('Administración')" class="flex items-center gap-3 px-6 py-3 text-gray-400 hover:text-white hover:bg-gray-900 transition-colors">
+                        <i class="ph ph-users text-xl"></i>
+                        <span>Administración</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="Mantenimiento.html" onclick="loadModule('Mantenimiento')" class="flex items-center gap-3 px-6 py-3 text-gray-400 hover:text-white hover:bg-gray-900 transition-colors">
+                        <i class="ph ph-wrench text-xl"></i>
+                        <span>Mantenimiento</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="GestionReservas.html" onclick="loadModule('Reservas')" class="flex items-center gap-3 px-6 py-3 text-gray-400 hover:text-white hover:bg-gray-900 transition-colors">
+                        <i class="ph ph-calendar-check text-xl"></i>
+                        <span>Gestión de Reservas</span>
+                    </a>
+                </li>
+
+                <!-- Sección Activa: Ventas -->
+                <li>
+                    <a href="Ventas.html" onclick="loadModule('Ventas')" class="flex items-center gap-3 px-6 py-3 bg-white text-black font-medium border-l-4 border-gray-400">
+                        <i class="ph ph-currency-dollar text-xl"></i>
+                        <span>Ventas</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="p-4 border-t border-gray-800">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">
+                    <i class="ph ph-user text-white"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-medium">Contabilidad / Gerencia</p>
+                    <p class="text-xs text-gray-500">En línea</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- 2. MAIN LAYOUT (Ventas Panel) -->
+    <main class="flex-1 flex flex-col bg-gray-50 relative">
+        
+        <!-- Header -->
+        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 shadow-sm">
+            <h1 class="text-xl font-semibold text-gray-800">Ventas</h1>
+            <div class="flex items-center gap-4">
+                <span id="currentDate" class="text-sm text-gray-500 font-medium border-r border-gray-300 pr-4">
+                    <!-- JS inject date -->
+                </span>
+                <button class="p-2 text-gray-600 hover:bg-gray-100 rounded-full relative">
+                    <i class="ph ph-bell text-xl"></i>
+                    <span class="absolute top-2 right-2 w-2 h-2 bg-black rounded-full"></span>
+                </button>
+                <button class="btn-primary px-4 py-2 rounded shadow-md text-sm font-medium">
+                    <i class="ph ph-sign-out mr-2"></i> Cerrar Sesión
+                </button>
+            </div>
+        </header>
+
+        <!-- Contenido del Módulo -->
+        <div class="flex-1 overflow-auto p-8">
+            
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">Resumen Financiero del Mes</h2>
+
+            <!-- Dashboard de KPIs Financieros -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                
+                <!-- KPI: Ventas Netas del Mes -->
+                <div class="kpi-card p-5 rounded-lg">
+                    <div class="flex items-center justify-between">
+                        <p class="text-sm font-medium text-gray-500">Ventas Netas (Enero)</p>
+                        <i class="ph ph-trend-up text-xl text-green-600"></i>
+                    </div>
+                    <p class="text-4xl font-extrabold mt-1 text-black">$ 24,500,000</p>
+                    <p class="text-xs text-gray-600 mt-2"> vs. Mes Anterior: <span class="text-green-600">+12%</span></p>
+                </div>
+
+                <!-- KPI: Ticket Promedio -->
+                <div class="kpi-card p-5 rounded-lg">
+                    <div class="flex items-center justify-between">
+                        <p class="text-sm font-medium text-gray-500">Ticket Promedio (Reserva)</p>
+                        <i class="ph ph-chart-line text-xl text-black"></i>
+                    </div>
+                    <p class="text-4xl font-extrabold mt-1 text-black">$ 1,225,000</p>
+                    <p class="text-xs text-gray-600 mt-2">Meta: $1,300,000</p>
+                </div>
+
+                <!-- KPI: RevPAR (Ingreso por Habitación Disponible) -->
+                <div class="kpi-card p-5 rounded-lg">
+                    <div class="flex items-center justify-between">
+                        <p class="text-sm font-medium text-gray-500">RevPAR (Tasa de Ingreso)</p>
+                        <i class="ph ph-bed text-xl text-black"></i>
+                    </div>
+                    <p class="text-4xl font-extrabold mt-1 text-black">$ 92,000</p>
+                    <p class="text-xs text-gray-600 mt-2">Ocupación: 75% | ADR: $122,667</p>
+                </div>
+            </div>
+
+            <!-- Panel de Transacciones Recientes -->
+            <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                    <h2 class="text-xl font-semibold">Registro de Transacciones Recientes</h2>
+                    <div class="flex items-center gap-3 w-full md:w-auto">
+                        <input type="text" placeholder="Buscar por factura, huésped o monto..." class="w-full md:w-64 border border-gray-300 rounded px-3 py-2 text-sm text-black focus:outline-none focus:border-black">
+                        <select class="border border-gray-300 rounded px-3 py-2 text-sm text-black focus:outline-none focus:border-black bg-white">
+                            <option>Filtrar por Fuente</option>
+                            <option>Habitación</option>
+                            <option>Minibar</option>
+                            <option>Restaurante</option>
+                        </select>
+                        <button onclick="simulateModal('Generar Reporte')" class="btn-primary px-4 py-2 rounded text-sm font-medium whitespace-nowrap shadow-md">
+                            <i class="ph ph-download-simple mr-2"></i> Exportar Reporte
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tabla de Ventas -->
+                <div class="overflow-x-auto rounded-lg border border-gray-200">
+                    <table class="min-w-full divide-y divide-gray-200 sales-table">
+                        <thead>
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider">Factura ID</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider">Huésped / Referencia</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider">Fecha</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider">Monto ($)</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider">Fuente</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider">Método Pago</th>
+                                <th class="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <!-- Fila 1: Habitación Completa -->
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-black">INV-0158</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 font-medium">Reserva #R4823 (Hab. 201)</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2025-01-05</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-green-700 font-semibold">$ 4,500,000</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Alojamiento</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">Tarjeta Visa</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <button onclick="simulateModal('Ver Factura INV-0158')" class="text-gray-600 hover:text-black transition p-1 rounded-full"><i class="ph ph-file-text text-lg"></i></button>
+                                </td>
+                            </tr>
+                            <!-- Fila 2: Restaurante -->
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-black">SALE-9912</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 font-medium">Mesa 5 (Cena)</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2025-01-05</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-green-700 font-semibold">$ 120,000</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Restaurante</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">Efectivo</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <button onclick="simulateModal('Ver Factura SALE-9912')" class="text-gray-600 hover:text-black transition p-1 rounded-full"><i class="ph ph-file-text text-lg"></i></button>
+                                </td>
+                            </tr>
+                            <!-- Fila 3: Minibar -->
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-black">MINI-1003</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 font-medium">Hab. 101</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2025-01-04</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-green-700 font-semibold">$ 15,000</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-200 text-gray-800">Servicios</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">Cargo a Habitación</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <button onclick="simulateModal('Ver Factura MINI-1003')" class="text-gray-600 hover:text-black transition p-1 rounded-full"><i class="ph ph-file-text text-lg"></i></button>
+                                </td>
+                            </tr>
+                            <!-- Más filas de transacciones... -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-4 flex justify-between items-center text-sm text-gray-600">
+                    <span>Mostrando 1 a 10 de 520 transacciones.</span>
+                    <div class="flex space-x-1">
+                        <button class="px-3 py-1 border rounded-lg hover:bg-gray-100 transition">Anterior</button>
+                        <button class="px-3 py-1 border rounded-lg bg-black text-white">1</button>
+                        <button class="px-3 py-1 border rounded-lg hover:bg-gray-100 transition">2</button>
+                        <button class="px-3 py-1 border rounded-lg hover:bg-gray-100 transition">Siguiente</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Función simulada para mostrar un modal de acción
+        function simulateModal(action) {
+            alert(`Simulación de acción: ${action}`);
+            // Aquí se abriría un modal para generar el reporte o ver detalles de la factura
+        }
+    </script>
+</body>
+</html>

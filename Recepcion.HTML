@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Módulo de Recepción - Hotel System</title>
+    <!-- Tailwind CSS para estructura rápida y responsive -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Iconos Phosphor para una estética limpia -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Fuente Inter para legibilidad -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa; /* Gris muy claro de fondo */
+            color: #1a1a1a;
+        }
+
+        /* Patrón para habitaciones en mantenimiento (Rayas grises) */
+        .bg-maintenance {
+            background: repeating-linear-gradient(
+                45deg,
+                #e5e7eb,
+                #e5e7eb 10px,
+                #d1d5db 10px,
+                #d1d5db 20px
+            );
+            color: #4b5563;
+        }
+
+        /* Transiciones suaves */
+        .room-card {
+            transition: all 0.2s ease-in-out;
+        }
+        .room-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        /* Scrollbar minimalista */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body class="h-screen flex overflow-hidden">
+
+    <!-- 1. SIDEBAR NAVIGATION -->
+    <!-- Representa la jerarquía definida: Inicio -> Recepción, Admin, Mantenimiento, etc. -->
+    <aside class="w-64 bg-black text-white flex flex-col shadow-xl z-20 hidden md:flex">
+        <div class="logo-container">
+            <img src="logo2.png" alt="Logo Hotel Soft">
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-4">
+            <ul class="space-y-1">
+                <li>
+                    <a href="Inicio.html" class="flex items-center gap-3 px-6 py-3 text-gray-400 hover:text-white hover:bg-gray-900 transition-colors">
+                        <i class="ph ph-house text-xl"></i>
+                        <span>Inicio</span>
+                    </a>
+                </li>
+                
+                <!-- Sección Activa -->
+                <li>
+                    <a href="Recepcion.HTML" class="flex items-center gap-3 px-6 py-3 bg-white text-black font-medium border-l-4 border-gray-400">
+                        <i class="fa-solid fa-bell-concierge" style="color: #ffffff;"></i>
+                        <span>Recepción</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="Administracion.html" class="flex items-center gap-3 px-6 py-3 text-gray-400 hover:text-white hover:bg-gray-900 transition-colors">
+                        <i class="ph ph-users text-xl"></i>
+                        <span>Administración</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="Mantenimiento.html" class="flex items-center gap-3 px-6 py-3 text-gray-400 hover:text-white hover:bg-gray-900 transition-colors">
+                        <i class="ph ph-wrench text-xl"></i>
+                        <span>Mantenimiento</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="GestionReservas.html" class="flex items-center gap-3 px-6 py-3 text-gray-400 hover:text-white hover:bg-gray-900 transition-colors">
+                        <i class="ph ph-calendar-check text-xl"></i>
+                        <span>Gestion de Reservas</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="Ventas.html" class="flex items-center gap-3 px-6 py-3 text-gray-400 hover:text-white hover:bg-gray-900 transition-colors">
+                        <i class="ph ph-currency-dollar text-xl"></i>
+                        <span>Ventas</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="p-4 border-t border-gray-800">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">
+                    <i class="ph ph-user text-white"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-medium">Recepción 01</p>
+                    <p class="text-xs text-gray-500">En línea</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- 2. MAIN LAYOUT -->
+    <main class="flex-1 flex flex-col bg-gray-50 relative">
+        
+        <!-- Header -->
+        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 shadow-sm">
+            <h1 class="text-xl font-semibold text-gray-800">Recepción</h1>
+            <div class="flex items-center gap-4">
+                <span id="currentDate" class="text-sm text-gray-500 font-medium border-r border-gray-300 pr-4">
+                    <!-- JS inject date -->
+                </span>
+                <button class="p-2 text-gray-600 hover:bg-gray-100 rounded-full relative">
+                    <i class="ph ph-bell text-xl"></i>
+                    <span class="absolute top-2 right-2 w-2 h-2 bg-black rounded-full"></span>
+                </button>
+                <button class="btn-primary px-4 py-2 rounded shadow-md text-sm font-medium bg-black text-white" style="color: #fff;">
+                    <i class="ph ph-sign-out mr-2" style="color: #fff;"></i> Cerrar Sesión
+                </button>
+            </div>
+        </header>
+
+        <!-- Contenido del Módulo -->
+        <div class="flex-1 overflow-auto p-8">
+            
+            <!-- Barra de Acciones y Filtros -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+                
+                <!-- Filtros (Status Legend) -->
+                <div class="flex flex-wrap gap-2 bg-white p-1 rounded-lg border border-gray-200 shadow-sm">
+                    <button onclick="filterRooms('all')" class="px-4 py-2 text-sm font-medium rounded-md bg-black text-white hover:bg-gray-800 transition-colors focus:outline-none ring-offset-2 focus:ring-2 ring-black">
+                        Todos
+                    </button>
+                    <button onclick="filterRooms('libre')" class="px-4 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-100 transition-colors flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-gray-300 border border-gray-400"></span> Libre
+                    </button>
+                    <button onclick="filterRooms('ocupada')" class="px-4 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-100 transition-colors flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-black"></span> Ocupada
+                    </button>
+                    <button onclick="filterRooms('mantenimiento')" class="px-4 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-100 transition-colors flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-gray-400 stripe-icon"></span> Mant.
+                    </button>
+                </div>
+
+                <!-- Botón de Acción Principal -->
+                <button onclick="openCheckInModal()" class="bg-black text-white px-6 py-2.5 rounded shadow hover:bg-gray-800 transition flex items-center gap-2 font-medium">
+                    <i class="ph ph-plus"></i>
+                    Nuevo Check-in
+                </button>
+            </div>
+
+            <!-- 3. RoomStatusGrid (Componente Frontend Principal) -->
+            <div id="roomGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+                <!-- Las habitaciones se generarán aquí con JS -->
+            </div>
+
+        </div>
+    </main>
+
+    <!-- 4. MODAL: CheckInWizard (Componente Frontend) -->
+    <div id="checkInModal" class="fixed inset-0 z-50 hidden">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onclick="closeCheckInModal()"></div>
+        
+        <!-- Modal Content -->
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-white shadow-2xl rounded-lg overflow-hidden">
+            
+            <!-- Header Modal -->
+            <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-lg font-bold text-black">Registro de Huésped (Check-In)</h3>
+                <button onclick="closeCheckInModal()" class="text-gray-400 hover:text-black transition">
+                    <i class="ph ph-x text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Registro de huespedes body modal -->
+            <div class="p-8"> 
+                <form onsubmit="event.preventDefault(); alert('Check-in simulado exitoso'); closeCheckInModal();">
+                    <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
+                        
+                        <!-- Columna 1 -->
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-3 gap-4">
+                                <div>
+                                    <label for="tipoDocumento" class="block text-sm font-medium text-gray-700 mb-1">Tipo de Documento</label>
+                                    <!-- ESTE ES EL SELECT SOLICITADO -->
+                                    <select id="tipoDocumento" class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-black focus:border-black bg-white" required>
+                                        <option value="" disabled selected>Seleccione</option>
+                                        <option value="CC">C.C. (Cédula de Ciudadanía)</option>
+                                        <option value="TI">T.I. (Tarjeta de Identidad)</option>
+                                        <option value="CE">C.E. (Cédula de Extranjería)</option>
+                                        <option value="PASAPORTE">Pasaporte</option>
+                                        <option value="RC">Registro Civil</option>
+                                    </select>
+                                </div>
+                                <div class="col-span-2">
+                                    <label for="numeroDocumento" class="block text-sm font-medium text-gray-700 mb-1">Número de Documento</label>
+                                    <input type="text" id="numeroDocumento" class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-black focus:border-black" placeholder="Ingrese el número" required>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Nombre Completo</label>
+                                <input type="text" placeholder="Ej: Juan Yance" class="w-full border border-gray-300 rounded px-3 py-2 text-black focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Correo Electrónico</label>
+                                <input type="email" placeholder="correo@ejemplo.com" class="w-full border border-gray-300 rounded px-3 py-2 text-black focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition">
+                            </div>
+                        </div>
+
+                        <!-- Columna 2 -->
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Habitación Asignada</label>
+                                <select class="w-full border border-gray-300 rounded px-3 py-2 text-black focus:outline-none focus:border-black bg-white">
+                                    <option>101 - Suite (Libre)</option>
+                                    <option>204 - Doble (Libre)</option>
+                                    <option>305 - Sencilla (Libre)</option>
+                                </select>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Entrada</label>
+                                    <input type="date" class="w-full border border-gray-300 rounded px-3 py-2 text-gray-600 focus:outline-none focus:border-black">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Salida</label>
+                                    <input type="date" class="w-full border border-gray-300 rounded px-3 py-2 text-gray-600 focus:outline-none focus:border-black">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Método de Pago</label>
+                                <div class="flex gap-4 mt-2">
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" name="pago" class="accent-black" checked>
+                                        <span class="text-sm">Efectivo</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" name="pago" class="accent-black">
+                                        <span class="text-sm">Tarjeta</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" name="pago" class="accent-black">
+                                        <span class="text-sm">Transferencia</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer del Formulario -->
+                    <div class="mt-8 flex justify-end gap-3 pt-6 border-t border-gray-100">
+                        <button type="button" onclick="closeCheckInModal()" class="px-5 py-2 border border-gray-300 text-gray-600 rounded hover:bg-gray-100 transition text-sm font-medium">Cancelar</button>
+                        <button type="submit" class="px-5 py-2 bg-black text-white rounded hover:bg-gray-800 transition text-sm font-medium shadow-lg shadow-gray-400/20">Registrar Entrada</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- 1. Datos Simulados ---
+        // Generamos un array de habitaciones para simular la base de datos
+        const roomsData = [
+            { id: 101, type: 'Suite', status: 'ocupada', guest: 'Sr. Anderson', floor: 1 },
+            { id: 102, type: 'Doble', status: 'libre', guest: null, floor: 1 },
+            { id: 103, type: 'Sencilla', status: 'libre', guest: null, floor: 1 },
+            { id: 104, type: 'Doble', status: 'mantenimiento', guest: null, floor: 1 },
+            { id: 201, type: 'Suite', status: 'libre', guest: null, floor: 2 },
+            { id: 202, type: 'Familiar', status: 'ocupada', guest: 'Fam. Gómez', floor: 2 },
+            { id: 203, type: 'Sencilla', status: 'libre', guest: null, floor: 2 },
+            { id: 204, type: 'Doble', status: 'limpieza', guest: null, floor: 2 },
+            { id: 301, type: 'Penthouse', status: 'ocupada', guest: 'VIP', floor: 3 },
+            { id: 302, type: 'Doble', status: 'libre', guest: null, floor: 3 },
+            { id: 303, type: 'Sencilla', status: 'mantenimiento', guest: null, floor: 3 },
+            { id: 304, type: 'Doble', status: 'libre', guest: null, floor: 3 },
+        ];
+
+        // --- 2. Renderizado del Grid ---
+        const gridContainer = document.getElementById('roomGrid');
+
+        function renderRooms(filter = 'all') {
+            gridContainer.innerHTML = ''; // Limpiar grid
+
+            const filteredRooms = filter === 'all' 
+                ? roomsData 
+                : roomsData.filter(room => {
+                    if(filter === 'mantenimiento') return room.status === 'mantenimiento' || room.status === 'limpieza';
+                    return room.status === filter;
+                });
+
+            filteredRooms.forEach(room => {
+                const card = document.createElement('div');
+                
+                // Estilos dinámicos según estado (BLANCO, NEGRO, GRIS)
+                let statusClasses = '';
+                let icon = '';
+                let statusText = '';
+                let textColor = '';
+                let subTextColor = '';
+
+                if (room.status === 'libre') {
+                    statusClasses = 'bg-white border border-gray-200';
+                    icon = 'ph-check-circle';
+                    statusText = 'Disponible';
+                    textColor = 'text-black';
+                    subTextColor = 'text-gray-500';
+                } else if (room.status === 'ocupada') {
+                    statusClasses = 'bg-black text-white border border-black';
+                    icon = 'ph-user';
+                    statusText = 'Ocupada';
+                    textColor = 'text-white';
+                    subTextColor = 'text-gray-400';
+                } else if (room.status === 'mantenimiento' || room.status === 'limpieza') {
+                    statusClasses = 'bg-maintenance border border-gray-300';
+                    icon = 'ph-wrench';
+                    statusText = room.status === 'limpieza' ? 'Limpieza' : 'Mantenimiento';
+                    textColor = 'text-gray-800';
+                    subTextColor = 'text-gray-600';
+                }
+
+                // Estructura HTML de la Card
+                card.className = `room-card p-5 rounded-lg shadow-sm relative cursor-pointer ${statusClasses}`;
+                card.onclick = () => alert(`Detalles de Habitación ${room.id}\nEstado: ${statusText}`);
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-2xl font-bold ${textColor}">${room.id}</span>
+                        <i class="ph ${icon} text-xl opacity-70"></i>
+                    </div>
+                    <div class="space-y-1">
+                        <p class="text-xs font-medium uppercase tracking-wider opacity-70">Tipo</p>
+                        <p class="font-medium ${textColor}">${room.type}</p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t ${room.status === 'ocupada' ? 'border-gray-700' : 'border-gray-200'}">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-semibold ${subTextColor}">${statusText}</span>
+                            ${room.guest ? `<span class="text-xs truncate max-w-[80px] text-right opacity-80" title="${room.guest}">${room.guest}</span>` : ''}
+                        </div>
+                    </div>
+                `;
+                
+                gridContainer.appendChild(card);
+            });
+        }
+
+        // --- 3. Lógica de UI ---
+        
+        // Inicializar fecha
+        const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('es-ES', dateOptions);
+
+        // Funciones del Modal
+        function openCheckInModal() {
+            const modal = document.getElementById('checkInModal');
+            modal.classList.remove('hidden');
+            // Pequeña animación de entrada
+            setTimeout(() => {
+                modal.firstElementChild.classList.add('opacity-100');
+            }, 10);
+        }
+
+        function closeCheckInModal() {
+            const modal = document.getElementById('checkInModal');
+            modal.classList.add('hidden');
+        }
+
+        // Función de Filtrado
+        function filterRooms(status) {
+            renderRooms(status);
+            
+            // Actualizar estilo visual de los botones de filtro (solo para demo)
+            // En una app React esto se maneja con State
+        }
+
+        // Toggle Sidebar en móvil
+        function toggleSidebar() {
+            const sidebar = document.querySelector('aside');
+            sidebar.classList.toggle('hidden');
+            sidebar.classList.toggle('fixed');
+            sidebar.classList.toggle('inset-y-0');
+            sidebar.classList.toggle('left-0');
+        }
+
+        // Render inicial
+        renderRooms();
+
+    </script>
+</body>
+</html>

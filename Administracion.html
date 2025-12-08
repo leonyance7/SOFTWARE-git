@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Módulo de Administración - Hotel System</title>
+    <!-- Tailwind CSS para estructura rápida y responsive -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Iconos Phosphor para una estética limpia -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Fuente Inter para legibilidad -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa; /* Gris muy claro de fondo */
+            color: #1a1a1a;
+        }
+
+        /* Estilo para los botones primarios (Negro) */
+        .btn-primary {
+            background-color: #000000;
+            color: #ffffff;
+            transition: background-color 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: #333333;
+        }
+
+        /* Estilo para la tabla (Fondo blanco, líneas grises) */
+        .admin-table th {
+            background-color: #f4f4f4;
+            color: #333333;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .admin-table td {
+            border-bottom: 1px solid #eeeeee;
+        }
+        .admin-table tr:hover {
+            background-color: #fafafa;
+        }
+    </style>
+</head>
+<body class="h-screen flex overflow-hidden">
+
+    <!-- 1. SIDEBAR NAVIGATION -->
+    <!-- Estructura de Navegación Jerárquica (SidebarNavigation) -->
+    <aside class="w-64 bg-black text-white flex flex-col shadow-xl z-20">
+        <div class="logo-container">
+            <img src="logo2.png" alt="Logo Hotel Soft">
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-4">
+            <ul class="space-y-1">
+                <li>
+                    <a href="Inicio.html" onclick="loadModule('Inicio')" class="flex items-center gap-3 px-6 py-3 text-gray-400 hover:text-white hover:bg-gray-900 transition-colors">
+                        <i class="ph ph-house text-xl"></i>
+                        <span>Inicio</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="Recepcion.HTML" onclick="loadModule('Recepción')" class="flex items-center gap-3 px-6 py-3 text-gray-400 hover:text-white hover:bg-gray-900 transition-colors">
+                        <i class="fa-solid fa-bell-concierge"></i>
+                        <span>Recepción</span>
+                    </a>
+                </li>
+                
+                <!-- Sección Activa: Administración -->
+                <li>
+                    <a href="Administracion.html" onclick="loadModule('Administración')" class="flex items-center gap-3 px-6 py-3 bg-white text-black font-medium border-l-4 border-gray-400">
+                        <i class="ph ph-users text-xl"></i>
+                        <span>Administración</span>
+                    </a>
+                    <!-- Sub-menú de Administración -->
+                    <ul class="ml-4 mt-1 space-y-1 text-sm">
+                        <li><a onclick="switchTab('usuarios')" class="block px-6 py-2 text-gray-400 hover:text-white hover:bg-gray-900 rounded-r-lg transition-colors">Usuarios</a></li>
+                        <li><a  onclick="switchTab('configuracion')" class="block px-6 py-2 text-gray-400 hover:text-white hover:bg-gray-900 rounded-r-lg transition-colors">Configuración</a></li>
+                        <li><a  onclick="switchTab('banner')" class="block px-6 py-2 text-gray-400 hover:text-white hover:bg-gray-900 rounded-r-lg transition-colors">Banner</a></li>
+                        <li><a  onclick="switchTab('log')" class="block px-6 py-2 text-gray-400 hover:text-white hover:bg-gray-900 rounded-r-lg transition-colors">Log de Acceso</a></li>
+                    </ul>
+                </li>
+
+                <li>
+                    <a href="Mantenimiento.html" onclick="loadModule('Mantenimiento')" class="flex items-center gap-3 px-6 py-3 text-gray-400 hover:text-white hover:bg-gray-900 transition-colors">
+                        <i class="ph ph-wrench text-xl"></i>
+                        <span>Mantenimiento</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="GestionReservas.html" onclick="loadModule('Reservas')" class="flex items-center gap-3 px-6 py-3 text-gray-400 hover:text-white hover:bg-gray-900 transition-colors">
+                        <i class="ph ph-calendar-check text-xl"></i>
+                        <span>Gestión de Reservas</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="Ventas.html" onclick="loadModule('Ventas')" class="flex items-center gap-3 px-6 py-3 text-gray-400 hover:text-white hover:bg-gray-900 transition-colors">
+                        <i class="ph ph-currency-dollar text-xl"></i>
+                        <span>Ventas</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="p-4 border-t border-gray-800">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">
+                    <i class="ph ph-user text-white"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-medium">Admin General</p>
+                    <p class="text-xs text-gray-500">En línea</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- 2. MAIN LAYOUT (MainLayout) -->
+    <main class="flex-1 flex flex-col bg-gray-50 relative">
+        
+        <!-- Header -->
+        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 shadow-sm">
+            <h1 class="text-xl font-semibold text-gray-800">Administración</h1>
+            <div class="flex items-center gap-4">
+                <span id="currentDate" class="text-sm text-gray-500 font-medium border-r border-gray-300 pr-4">
+                    <!-- JS inject date -->
+                </span>
+                <button class="p-2 text-gray-600 hover:bg-gray-100 rounded-full relative">
+                    <i class="ph ph-bell text-xl"></i>
+                    <span class="absolute top-2 right-2 w-2 h-2 bg-black rounded-full"></span>
+                </button>
+                <button class="btn-primary px-4 py-2 rounded shadow-md text-sm font-medium">
+                    <i class="ph ph-sign-out mr-2"></i> Cerrar Sesión
+                </button>
+            </div>
+        </header>
+
+        <!-- Contenido del Módulo -->
+        <div class="flex-1 overflow-auto p-8">
+            
+            <!-- Tabs (Componentes de navegación interna) -->
+            <div class="border-b border-gray-300 mb-6 bg-white rounded-t-lg shadow-sm">
+                <nav class="flex space-x-4 px-6 pt-4">
+                    <button id="tab-usuarios" onclick="switchTab('usuarios')" class="tab-button pb-3 text-sm font-medium text-black border-b-2 border-black">
+                        <i class="ph ph-users mr-2"></i> Usuarios (UserManagementTable)
+                    </button>
+                    <button id="tab-configuracion" onclick="switchTab('configuracion')" class="tab-button pb-3 text-sm font-medium text-gray-500 hover:text-black border-b-2 border-transparent hover:border-gray-500">
+                        <i class="ph ph-gear-six mr-2"></i> Configuración (SettingsPanel)
+                    </button>
+                    <button id="tab-banner" onclick="switchTab('banner')" class="tab-button pb-3 text-sm font-medium text-gray-500 hover:text-black border-b-2 border-transparent hover:border-gray-500">
+                        <i class="ph ph-image mr-2"></i> Banner (BannerUploader)
+                    </button>
+                    <button id="tab-log" onclick="switchTab('log')" class="tab-button pb-3 text-sm font-medium text-gray-500 hover:text-black border-b-2 border-transparent hover:border-gray-500">
+                        <i class="ph ph-list-numbers mr-2"></i> Log de Acceso (AccessLogViewer)
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Contenido Dinámico de las Pestañas -->
+            <div id="tab-content" class="bg-white p-6 rounded-lg shadow-lg">
+                <!-- El contenido de la pestaña activa se cargará aquí por JS -->
+            </div>
+
+        </div>
+    </main>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Datos simulados para UserManagementTable
+        const usersData = [
+            { id: 1, name: 'Elena Ramírez', role: 'Gerente General', email: 'elena@hotel.com' },
+            { id: 2, name: 'Pedro López', role: 'Jefe de Recepción', email: 'pedro@hotel.com' },
+            { id: 3, name: 'Laura Gómez', role: 'Jefe de Mantenimiento', email: 'laura@hotel.com' },
+            { id: 4, name: 'Carlos Díaz', role: 'Contador', email: 'carlos@hotel.com' },
+        ];
+
+        // Mapeo de contenido para las pestañas
+        const tabContentMap = {
+            'usuarios': `
+                <!-- UserManagementTable -->
+                <h3 class="text-xl font-semibold mb-4">Gestión de Usuarios</h3>
+                <div class="flex justify-between items-center mb-4">
+                    <input type="text" placeholder="Buscar usuario por nombre o rol..." class="w-64 border border-gray-300 rounded px-3 py-2 text-black focus:outline-none focus:border-black">
+                    <button class="btn-primary px-4 py-2 rounded text-sm font-medium shadow-md">
+                        <i class="ph ph-user-plus mr-2"></i> Nuevo Usuario
+                    </button>
+                </div>
+                <div class="overflow-x-auto rounded-lg border border-gray-200">
+                    <table class="min-w-full divide-y divide-gray-200 admin-table">
+                        <thead>
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider">Nombre</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider">Rol</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider">Correo</th>
+                                <th class="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            ${usersData.map(user => `
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-black">${user.name}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${user.role}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${user.email}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <button onclick="alert('Editar a ${user.name}')" class="text-gray-600 hover:text-black transition p-1 rounded-full">
+                                            <i class="ph ph-pencil-simple text-lg"></i>
+                                        </button>
+                                        <button onclick="alert('Eliminar a ${user.name}')" class="text-gray-600 hover:text-black transition p-1 rounded-full ml-2">
+                                            <i class="ph ph-trash text-lg"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `,
+            'configuracion': `
+                <!-- SettingsPanel -->
+                <h3 class="text-xl font-semibold mb-4">Configuración del Sistema</h3>
+                <form class="space-y-6 max-w-lg">
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-700">Tasa de Impuestos (%)</label>
+                        <input type="number" value="19" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-black">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-700">Moneda por Defecto</label>
+                        <select class="w-full border border-gray-300 rounded px-3 py-2 bg-white focus:outline-none focus:border-black">
+                            <option>COP - Peso Colombiano</option>
+                            <option>USD - Dólar Estadounidense</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center space-x-3 pt-2">
+                        <input id="anon-reservas" type="checkbox" checked class="w-4 h-4 text-black border-gray-300 rounded focus:ring-black accent-black">
+                        <label for="anon-reservas" class="text-sm font-medium text-gray-700">Permitir reservas anónimas</label>
+                    </div>
+                    <button type="submit" class="btn-primary px-6 py-2 rounded shadow-md text-sm font-medium">
+                        <i class="ph ph-floppy-disk mr-2"></i> Guardar Configuración
+                    </button>
+                </form>
+            `,
+            'banner': `
+                <!-- BannerUploader -->
+                <h3 class="text-xl font-semibold mb-4">Gestión de Banner Promocional</h3>
+                <div class="flex flex-col md:flex-row gap-8">
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Subir Imagen (Drag and Drop)</label>
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-10 text-center hover:border-black transition cursor-pointer bg-gray-50">
+                            <i class="ph ph-upload-simple text-4xl text-gray-500 mb-2"></i>
+                            <p class="text-sm text-gray-600">Arrastra tu imagen aquí o haz click para seleccionar.</p>
+                            <p class="text-xs text-gray-400 mt-1">Formatos permitidos: JPG, PNG. Max 5MB.</p>
+                            <input type="file" class="hidden">
+                        </div>
+                        <button class="btn-primary w-full mt-4 py-2 rounded text-sm font-medium">
+                            <i class="ph ph-arrow-fat-up mr-2"></i> Publicar Banner
+                        </button>
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Previsualización (Escala de Grises)</label>
+                        <div class="w-full h-40 bg-gray-200 rounded-lg flex items-center justify-center text-gray-600 text-sm italic font-medium">
+                            [Placeholder de Imagen Actual del Banner]
+                        </div>
+                    </div>
+                </div>
+            `,
+            'log': `
+                <!-- AccessLogViewer -->
+                <h3 class="text-xl font-semibold mb-4">Historial de Acceso al Sistema</h3>
+                <div class="h-96 overflow-y-scroll border border-gray-200 rounded-lg bg-gray-50 p-4">
+                    <ul class="space-y-3">
+                        <li class="p-3 bg-white border border-gray-100 rounded shadow-sm text-sm">
+                            <span class="font-semibold text-black">[2024-12-05 10:30]</span> - Usuario <span class="text-blue-700 font-medium">Elena Ramírez</span> accedió al <span class="italic">SettingsPanel</span>.
+                        </li>
+                        <li class="p-3 bg-white border border-gray-100 rounded shadow-sm text-sm">
+                            <span class="font-semibold text-black">[2024-12-05 09:45]</span> - Usuario <span class="text-blue-700 font-medium">Pedro López</span> realizó **Check-in** a Habitación 201.
+                        </li>
+                        <li class="p-3 bg-white border border-gray-100 rounded shadow-sm text-sm">
+                            <span class="font-semibold text-black">[2024-12-04 18:00]</span> - Sistema - Tarea programada: Backup de BD finalizado.
+                        </li>
+                        <li class="p-3 bg-white border border-gray-100 rounded shadow-sm text-sm">
+                            <span class="font-semibold text-black">[2024-12-04 17:58]</span> - Usuario <span class="text-blue-700 font-medium">Laura Gómez</span> actualizó el estado de Habitación 104 a **Mantenimiento**.
+                        </li>
+                        <li class="p-3 bg-white border border-gray-100 rounded shadow-sm text-sm text-gray-400 italic">
+                            ... Cientos de entradas anteriores ...
+                        </li>
+                    </ul>
+                </div>
+                <p class="text-xs text-gray-500 mt-4">Lista de solo lectura. El scroll infinito permite cargar datos históricos.</p>
+            `
+        };
+
+        // Función principal para cambiar de pestaña dentro de Administración
+        function switchTab(tabId) {
+            const contentDiv = document.getElementById('tab-content');
+            const tabButtons = document.querySelectorAll('.tab-button');
+            
+            // 1. Ocultar todos los contenidos y restablecer estilos de botones
+            tabButtons.forEach(button => {
+                button.classList.remove('border-black', 'text-black', 'border-b-2');
+                button.classList.add('border-transparent', 'text-gray-500', 'hover:border-gray-500');
+            });
+
+            // 2. Activar el botón seleccionado
+            const activeButton = document.getElementById(`tab-${tabId}`);
+            if (activeButton) {
+                activeButton.classList.add('border-black', 'text-black', 'border-b-2');
+                activeButton.classList.remove('border-transparent', 'text-gray-500', 'hover:border-gray-500');
+            }
+
+            // 3. Cargar el contenido HTML
+            contentDiv.innerHTML = tabContentMap[tabId] || '<p class="text-gray-500">Contenido no encontrado.</p>';
+        }
+
+        // Cargar la pestaña 'usuarios' por defecto al iniciar
+        document.addEventListener('DOMContentLoaded', () => {
+            switchTab('usuarios');
+        });
+    </script>
+</body>
+</html>
