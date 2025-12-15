@@ -272,5 +272,94 @@
             // Aquí se abriría un modal o panel lateral para el formulario, check-in o detalles
         }
     </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Establecer la fecha actual en el encabezado
+            document.getElementById('currentDate').textContent = new Date().toLocaleDateString('es-CO', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            // Llama a las funciones de carga
+            loadKPIs();
+            loadReservations();
+        });
+
+
+        // Función para cargar y mostrar los KPIs de reservas
+        async function loadKPIs() {
+            try {
+                const API_URL = 'http://localhost:3000'; 
+                const response = await fetch(`${API_URL}/api/ventas/kpis`);
+                const data = await response.json();
+
+                // Actualizar los elementos del DOM con los valores de los KPIs
+                document.querySelector('.kpi-card:nth-child(1) p.text-3xl').textContent = data.checkinsHoy;
+                document.querySelector('.kpi-card:nth-child(2) p.text-3xl').textContent = data.checkoutsManana;
+                document.querySelector('.kpi-card:nth-child(3) p.text-3xl').textContent = data.habitacionesDisponibles;
+
+            } catch (error) {
+                console.error('Error al cargar los KPIs:', error);
+                // Mostrar error en el dashboard si falla
+                document.querySelector('.kpi-card:nth-child(1) p.text-3xl').textContent = 'Error';
+            }
+        }
+
+
+        // Función para cargar y mostrar la tabla de reservas
+        async function loadReservations() {
+            try {
+                const response = await fetch('/api/reservas');
+                const reservas = await response.json();
+                const tbody = document.querySelector('.reservas-table tbody');
+                tbody.innerHTML = ''; // Limpiar filas estáticas existentes
+
+                if (reservas.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" class="text-center py-6 text-gray-500">No hay reservas activas o próximas.</td></tr>';
+                    return;
+                }
+
+                reservas.forEach(reserva => {
+                    const row = `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-black">${reserva.id}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 font-medium">${reserva.cliente}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${reserva.llegada}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${reserva.salida}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${reserva.tipoHabitacion}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">${reserva.total}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${reserva.estadoTagClass}">
+                                    ${reserva.estado}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <button onclick="simulateModal('Modificar #R${reserva.idRaw}')" class="text-gray-600 hover:text-black transition p-1 rounded-full"><i class="ph ph-pencil-simple text-lg"></i></button>
+                                <button onclick="simulateModal('Ver Detalle #R${reserva.idRaw}')" class="text-gray-600 hover:text-black transition p-1 rounded-full ml-2"><i class="ph ph-info text-lg"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.insertAdjacentHTML('beforeend', row);
+                });
+
+                // Actualizar contador de reservas
+                document.querySelector('.mt-4.flex.justify-between span').textContent = `Mostrando 1 a ${reservas.length} de ${reservas.length} reservas.`;
+
+            } catch (error) {
+                console.error('Error al cargar las reservas:', error);
+                const tbody = document.querySelector('.reservas-table tbody');
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center py-6 text-red-500 font-medium">Error al conectar con la API de Reservas.</td></tr>';
+            }
+        }
+
+        // Función simulada para mostrar un modal
+        function simulateModal(action) {
+            alert(`Simulación de acción: ${action}`);
+        }
+    </script>
+
 </body>
 </html>

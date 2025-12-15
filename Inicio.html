@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Módulo de Inicio - Hotel System</title>
-    <!-- Tailwind CSS para estructura rápida y responsive -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Iconos Phosphor para una estética limpia -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <!-- Fuente Inter para legibilidad -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
@@ -31,7 +28,7 @@
         .logo-container {
             display: flex;
             justify-content: center; /* Centrado horizontal */
-            align-items: center;     /* Centrado vertical */
+            align-items: center;    /* Centrado vertical */
         }
         .logo-container img {
             max-width: 100%;
@@ -58,17 +55,14 @@
 </head>
 <body class="h-screen flex overflow-hidden">
 
-    <!-- 1. SIDEBAR NAVIGATION -->
-    <!-- Estructura de Navegación Jerárquica (SidebarNavigation) -->
     <aside class="w-64 bg-black text-white flex flex-col shadow-xl z-20">
-        <div class="logo-container">
+        <div class="logo-container p-4">
             <img src="logo2.png" alt="Logo Hotel Soft">
         </div>
 
 
         <nav class="flex-1 overflow-y-auto py-4">
             <ul class="space-y-1">
-                <!-- Sección Activa: Inicio -->
                 <li>
                     <a href="Inicio.html" onclick="loadModule('Inicio')" class="flex items-center gap-3 px-6 py-3 bg-white text-black font-medium border-l-4 border-gray-400">
                         <i class="ph ph-house text-xl"></i>
@@ -86,8 +80,7 @@
                         <i class="ph ph-users text-xl"></i>
                         <span>Administración</span>
                     </a>
-                    <!-- Sub-menú de Administración (Oculto en Inicio) -->
-                </li>
+                    </li>
 
                 <li>
                     <a href="Mantenimiento.html" onclick="loadModule('Mantenimiento')" class="flex items-center gap-3 px-6 py-3 text-gray-400 hover:text-white hover:bg-gray-900 transition-colors">
@@ -123,16 +116,13 @@
         </div>
     </aside>
 
-    <!-- 2. MAIN LAYOUT (DashboardOverview) -->
     <main class="flex-1 flex flex-col bg-gray-50 relative">
         
-        <!-- Header -->
         <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 shadow-sm">
             <h1 class="text-xl font-semibold text-gray-800">Inicio</h1>
             <div class="flex items-center gap-4">
                 <span id="currentDate" class="text-sm text-gray-500 font-medium border-r border-gray-300 pr-4">
-                    <!-- JS inject date -->
-                </span>
+                    </span>
                 <button class="p-2 text-gray-600 hover:bg-gray-100 rounded-full relative">
                     <i class="ph ph-bell text-xl"></i>
                     <span class="absolute top-2 right-2 w-2 h-2 bg-black rounded-full"></span>
@@ -143,110 +133,63 @@
             </div>
         </header>
 
-        <!-- Contenido del Dashboard -->
         <div class="flex-1 overflow-auto p-8">
             <h2 class="text-2xl font-bold text-gray-800 mb-6">Estado General del Hotel</h2>
             
-            <!-- KPIs (Key Performance Indicators) -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8" id="kpi-dashboard">
                 
-                <!-- KPI 1: Ocupación Actual (Recepción) -->
                 <div class="kpi-card p-5 rounded-lg">
                     <div class="flex items-center justify-between">
                         <p class="text-sm font-medium text-gray-500">Ocupación</p>
                         <i class="ph ph-hotel text-xl text-black opacity-80"></i>
                     </div>
-                    <p class="text-3xl font-extrabold mt-1">75%</p>
-                    <p class="text-xs text-gray-600 mt-2">15 / 20 Habitaciones</p>
+                    <p class="text-3xl font-extrabold mt-1" id="kpi-ocupacion-porcentaje">0%</p>
+                    <p class="text-xs text-gray-600 mt-2" id="kpi-ocupacion-detalle">Cargando...</p>
                 </div>
 
-                <!-- KPI 2: Ventas del Día (Ventas) -->
                 <div class="kpi-card p-5 rounded-lg">
                     <div class="flex items-center justify-between">
                         <p class="text-sm font-medium text-gray-500">Ventas Hoy</p>
                         <i class="ph ph-currency-dollar text-xl text-black opacity-80"></i>
                     </div>
-                    <p class="text-3xl font-extrabold mt-1">$ 1,850,000</p>
-                    <p class="text-xs text-gray-600 mt-2">Meta: $2,500,000</p>
+                    <p class="text-3xl font-extrabold mt-1" id="kpi-ventas-hoy">$ 0</p>
+                    <p class="text-xs text-gray-600 mt-2" id="kpi-ventas-meta">Meta: $0</p>
                 </div>
 
-                <!-- KPI 3: Check-outs Hoy (Recepción/Reservas) -->
                 <div class="kpi-card p-5 rounded-lg">
                     <div class="flex items-center justify-between">
                         <p class="text-sm font-medium text-gray-500">Próximos Check-outs</p>
                         <i class="ph ph-sign-out text-xl text-black opacity-80"></i>
                     </div>
-                    <p class="text-3xl font-extrabold mt-1 text-red-600">3</p>
+                    <p class="text-3xl font-extrabold mt-1 text-red-600" id="kpi-checkouts-hoy">0</p>
                     <p class="text-xs text-gray-600 mt-2">Avisar a Limpieza antes de las 11:00</p>
                 </div>
 
-                <!-- KPI 4: Alertas de Mantenimiento (Mantenimiento) -->
                 <div class="kpi-card p-5 rounded-lg">
                     <div class="flex items-center justify-between">
                         <p class="text-sm font-medium text-gray-500">Alertas Activas</p>
                         <i class="ph ph-warning-circle text-xl text-black opacity-80"></i>
                     </div>
-                    <p class="text-3xl font-extrabold mt-1 text-yellow-600">2</p>
-                    <p class="text-xs text-gray-600 mt-2">Hab. 104 y 303 en reparación</p>
+                    <p class="text-3xl font-extrabold mt-1 text-yellow-600" id="kpi-mantenimiento-alertas">0</p>
+                    <p class="text-xs text-gray-600 mt-2" id="kpi-mantenimiento-detalle">Habitaciones con problemas</p>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 
-                <!-- Columna Principal (Gráfico y Actividad) -->
                 <div class="lg:col-span-2 space-y-6">
                     
-                    <!-- Gráfico Simulado de Ocupación Semanal -->
                     <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
                         <h3 class="text-lg font-semibold mb-4">Ocupación Últimos 7 Días</h3>
-                        <div class="flex justify-around items-end h-48 py-2">
-                            <div class="text-center">
-                                <div class="chart-bar w-8 rounded-t" style="height: 60%;" title="Lunes: 60%"></div>
-                                <p class="text-xs mt-1 text-gray-500">Lun</p>
-                            </div>
-                            <div class="text-center">
-                                <div class="chart-bar w-8 rounded-t" style="height: 75%;" title="Martes: 75%"></div>
-                                <p class="text-xs mt-1 text-gray-500">Mar</p>
-                            </div>
-                            <div class="text-center">
-                                <div class="chart-bar w-8 rounded-t" style="height: 50%;" title="Miércoles: 50%"></div>
-                                <p class="text-xs mt-1 text-gray-500">Mié</p>
-                            </div>
-                            <div class="text-center">
-                                <div class="chart-bar w-8 rounded-t" style="height: 85%;" title="Jueves: 85%"></div>
-                                <p class="text-xs mt-1 text-gray-500">Jue</p>
-                            </div>
-                            <div class="text-center">
-                                <div class="chart-bar w-8 rounded-t bg-black" style="height: 95%;" title="Viernes: 95%"></div>
-                                <p class="text-xs mt-1 font-bold text-black">Vie</p>
-                            </div>
-                            <div class="text-center">
-                                <div class="chart-bar w-8 rounded-t" style="height: 90%;" title="Sábado: 90%"></div>
-                                <p class="text-xs mt-1 text-gray-500">Sáb</p>
-                            </div>
-                            <div class="text-center">
-                                <div class="chart-bar w-8 rounded-t" style="height: 70%;" title="Domingo: 70%"></div>
-                                <p class="text-xs mt-1 text-gray-500">Dom</p>
-                            </div>
+                        <div class="flex justify-around items-end h-48 py-2" id="chart-ocupacion-semanal">
+                             <p class="text-sm text-center text-gray-500">Cargando datos...</p>
                         </div>
                     </div>
 
-                    <!-- Gráfico Simulado de Tareas de Mantenimiento -->
                     <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
                         <h3 class="text-lg font-semibold mb-4">Tareas de Mantenimiento Pendientes</h3>
-                        <div class="flex flex-col gap-3">
-                            <div class="flex justify-between items-center text-sm">
-                                <p class="font-medium text-gray-700">Reparación de A/C (Hab. 104)</p>
-                                <span class="text-xs text-black font-semibold bg-gray-200 px-2 py-0.5 rounded-full">Alta</span>
-                            </div>
-                            <div class="flex justify-between items-center text-sm">
-                                <p class="font-medium text-gray-700">Pintura de pasillo (Piso 2)</p>
-                                <span class="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">Media</span>
-                            </div>
-                            <div class="flex justify-between items-center text-sm">
-                                <p class="font-medium text-gray-700">Revisión de luces (Hab. 303)</p>
-                                <span class="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">Media</span>
-                            </div>
+                        <div class="flex flex-col gap-3" id="mantenimiento-list">
+                             <p class="text-sm text-center text-gray-500">Cargando tareas...</p>
                         </div>
                         <button onclick="loadModule('Mantenimiento')" class="mt-4 text-sm text-gray-700 hover:text-black font-medium transition">
                             Ver todas las tareas <i class="ph ph-arrow-right ml-1"></i>
@@ -255,7 +198,6 @@
 
                 </div>
 
-                <!-- Columna Lateral (Actividad Reciente) -->
                 <div class="space-y-6">
                     <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
                         <h3 class="text-lg font-semibold mb-4 border-b pb-2 border-gray-200">Actividad Reciente</h3>
@@ -296,13 +238,110 @@
         </div>
     </main>
 
-    <!-- JAVASCRIPT LOGIC -->
     <script>
-        // Inicializar fecha
         document.addEventListener('DOMContentLoaded', () => {
+            // 1. Mostrar Fecha Actual
             const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             document.getElementById('currentDate').textContent = new Date().toLocaleDateString('es-ES', dateOptions);
+            
+            // 2. Cargar Datos del Dashboard desde el Backend
+            loadDashboardData();
         });
+
+        // Función para cargar los datos desde la API
+        async function loadDashboardData() {
+            try {
+                const response = await fetch('http://localhost:3000/api/dashboard-summary');
+                if (!response.ok) {
+                    throw new Error('Error al obtener datos del resumen.');
+                }
+                const data = await response.json();
+
+                // Formato de moneda para pesos Colombianos (ajusta según tu necesidad)
+                const formatter = new Intl.NumberFormat('es-CO', {
+                    style: 'currency',
+                    currency: 'COP', 
+                    minimumFractionDigits: 0
+                });
+
+                // --- 1. Llenar KPIs ---
+                // KPI Ocupación
+                const ocupacionPorcentaje = data.kpis.totalHabitaciones > 0 
+                    ? ((data.kpis.habitacionesOcupadas / data.kpis.totalHabitaciones) * 100).toFixed(0)
+                    : 0;
+                document.getElementById('kpi-ocupacion-porcentaje').textContent = `${ocupacionPorcentaje}%`;
+                document.getElementById('kpi-ocupacion-detalle').textContent = 
+                    `${data.kpis.habitacionesOcupadas} / ${data.kpis.totalHabitaciones} Habitaciones`;
+
+                // KPI Ventas Hoy (Simulado por ahora hasta crear el módulo de ventas real)
+                document.getElementById('kpi-ventas-hoy').textContent = formatter.format(data.kpis.ventasHoy);
+                document.getElementById('kpi-ventas-meta').textContent = `Meta: ${formatter.format(2500000)}`; // Meta simulada
+
+                // KPI Check-outs Hoy
+                document.getElementById('kpi-checkouts-hoy').textContent = data.kpis.checkoutsHoy;
+
+                // KPI Alertas Mantenimiento
+                document.getElementById('kpi-mantenimiento-alertas').textContent = data.kpis.mantenimientoActivo;
+                document.getElementById('kpi-mantenimiento-detalle').textContent = 
+                    `${data.kpis.mantenimientoActivo} Habitaciones en reparación`;
+
+
+                // --- 2. Llenar Tareas de Mantenimiento Pendientes ---
+                const mantenimientoList = document.getElementById('mantenimiento-list');
+                mantenimientoList.innerHTML = ''; // Limpiar
+                
+                if (data.mantenimiento.length > 0) {
+                    data.mantenimiento.slice(0, 3).forEach(tarea => { // Mostrar solo las primeras 3
+                        const listItem = document.createElement('div');
+                        listItem.className = 'flex justify-between items-center text-sm';
+                        
+                        let priorityClass = 'bg-gray-100 text-gray-500';
+                        if (tarea.prioridad === 'Alta') {
+                            priorityClass = 'bg-gray-200 text-black font-semibold';
+                        }
+
+                        listItem.innerHTML = `
+                            <p class="font-medium text-gray-700">${tarea.descripcion} (Hab. ${tarea.id_habitacion})</p>
+                            <span class="text-xs px-2 py-0.5 rounded-full ${priorityClass}">${tarea.prioridad}</span>
+                        `;
+                        mantenimientoList.appendChild(listItem);
+                    });
+                } else {
+                    mantenimientoList.innerHTML = '<p class="text-sm text-gray-500">¡No hay tareas de mantenimiento pendientes!</p>';
+                }
+
+                // --- 3. Llenar Gráfico de Ocupación Semanal (Simulado con datos del backend) ---
+                const chartContainer = document.getElementById('chart-ocupacion-semanal');
+                chartContainer.innerHTML = ''; // Limpiar
+
+                const dias = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+                
+                data.ocupacionSemanal.forEach((porcentaje, index) => {
+                    const diaIndex = (new Date().getDay() - (6 - index) + 7) % 7; // Ajustar el día de la semana
+                    const diaNombre = dias[diaIndex];
+
+                    const barColor = porcentaje >= 90 ? 'bg-black' : 'bg-gray-700';
+                    const barHeight = porcentaje * 0.9 + 5; // Escalar para que 100% no toque el borde
+
+                    const chartItem = document.createElement('div');
+                    chartItem.className = 'text-center h-full flex flex-col justify-end items-center';
+                    chartItem.style.width = '12%';
+
+                    chartItem.innerHTML = `
+                        <div class="chart-bar w-8 rounded-t ${barColor} self-center" style="height: ${barHeight}%;" title="${diaNombre}: ${porcentaje}%"></div>
+                        <p class="text-xs mt-1 ${porcentaje >= 90 ? 'font-bold text-black' : 'text-gray-500'}">${diaNombre}</p>
+                    `;
+                    chartContainer.appendChild(chartItem);
+                });
+
+
+            } catch (error) {
+                console.error('Error al cargar el dashboard:', error);
+                document.getElementById('kpi-ocupacion-detalle').textContent = 'Error de conexión.';
+                document.getElementById('mantenimiento-list').innerHTML = '<p class="text-sm text-red-500">Error al cargar los datos del servidor.</p>';
+                document.getElementById('chart-ocupacion-semanal').innerHTML = '<p class="text-sm text-red-500">Error al cargar el gráfico.</p>';
+            }
+        }
     </script>
 </body>
 </html>

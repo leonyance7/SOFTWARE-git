@@ -275,5 +275,102 @@
             // Aquí se abriría un modal para generar el reporte o ver detalles de la factura
         }
     </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Establecer la fecha actual en el encabezado
+            document.getElementById('currentDate').textContent = new Date().toLocaleDateString('es-CO', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            // Llama a las funciones de carga
+            loadSalesKPIs();
+            loadRecentTransactions();
+        });
+
+
+        // Función para cargar y mostrar los KPIs financieros
+        async function loadSalesKPIs() {
+            try {
+                const API_URL = 'http://localhost:3000'; 
+                const response = await fetch(`${API_URL}/api/ventas/kpis`);
+                const data = await response.json();
+
+                // 1. Ventas Netas del Mes
+                document.querySelector('.kpi-card:nth-child(1) p.text-4xl').textContent = data.ventasNetas;
+                document.querySelector('.kpi-card:nth-child(1) span').textContent = data.crecimiento;
+                // Ajustar color de crecimiento
+                const growthElement = document.querySelector('.kpi-card:nth-child(1) span');
+                growthElement.className = growthElement.className.replace(/text-(red|green)-\d+/, data.crecimiento.startsWith('-') ? 'text-red-600' : 'text-green-600');
+
+                // 2. Ticket Promedio
+                document.querySelector('.kpi-card:nth-child(2) p.text-4xl').textContent = data.ticketPromedio;
+
+                // 3. RevPAR
+                document.querySelector('.kpi-card:nth-child(3) p.text-4xl').textContent = data.revPAR;
+                document.querySelector('.kpi-card:nth-child(3) p.text-xs').textContent = data.revPARDetails;
+
+
+            } catch (error) {
+                console.error('Error al cargar los KPIs de ventas:', error);
+                document.querySelector('.kpi-card:nth-child(1) p.text-4xl').textContent = '$ Error';
+            }
+        }
+
+
+        // Función para cargar y mostrar la tabla de transacciones
+        async function loadRecentTransactions() {
+            try {
+                const response = await fetch('/api/ventas/transacciones');
+                const transacciones = await response.json();
+                const tbody = document.querySelector('.sales-table tbody');
+                tbody.innerHTML = ''; // Limpiar filas estáticas existentes
+
+                if (transacciones.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="text-center py-6 text-gray-500">No hay transacciones registradas.</td></tr>';
+                    return;
+                }
+
+                transacciones.forEach(t => {
+                    const row = `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-black">${t.facturaId}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 font-medium">${t.referencia}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${t.fecha}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-700 font-semibold">${t.monto}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${t.tagClass}">
+                                    ${t.fuente}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">${t.metodoPago}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <button onclick="simulateModal('Ver Factura ${t.facturaId}')" class="text-gray-600 hover:text-black transition p-1 rounded-full"><i class="ph ph-file-text text-lg"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.insertAdjacentHTML('beforeend', row);
+                });
+
+                // Mostrar el número de transacciones cargadas
+                document.querySelector('.mt-4.flex.justify-between span').textContent = `Mostrando 1 a ${transacciones.length} de ${transacciones.length}+ transacciones.`;
+
+            } catch (error) {
+                console.error('Error al cargar las transacciones:', error);
+                const tbody = document.querySelector('.sales-table tbody');
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center py-6 text-red-500 font-medium">Error al conectar con la API de Ventas.</td></tr>';
+            }
+        }
+
+        // Función simulada para mostrar un modal
+        function simulateModal(action) {
+            alert(`Simulación de acción: ${action}`);
+        }
+    </script>
+
+
 </body>
 </html>
